@@ -1,0 +1,358 @@
+{
+  "info": {
+    "_postman_id": "9dd2d920-88dd-4bb7-b445-1dbad835758f",
+    "name": "RideLink - Fare & Payment Service",
+    "description": "Positive and negative API tests for the RideLink Fare & Payment Service using non-sensitive environment variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Happy Path",
+      "item": [
+        {
+          "name": "01 - Fare Estimate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Estimated fare contains the expected ride ID and total\", function () {",
+                  "    pm.expect(String(response.rideId)).to.eql(String(pm.environment.get(\"rideId\")));",
+                  "    pm.expect(response.totalFare).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/fares/estimate?rideId={{rideId}}&distanceKm={{distanceKm}}",
+            "description": "Calculates an estimated fare using the environment ride ID and distance."
+          },
+          "response": []
+        },
+        {
+          "name": "02 - Final Fare",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Final fare contains a positive total\", function () {",
+                  "    pm.expect(response.totalFare).to.be.above(0);",
+                  "});",
+                  "",
+                  "if (response.totalFare !== undefined) {",
+                  "    pm.environment.set(\"amount\", String(response.totalFare));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/fares/final?rideId={{rideId}}&distanceKm={{distanceKm}}",
+            "description": "Calculates the final fare and saves it as the amount environment variable."
+          },
+          "response": []
+        },
+        {
+          "name": "03 - Create Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Payment is successful\", function () {",
+                  "    pm.expect(response.paymentStatus).to.eql(\"SUCCESS\");",
+                  "    pm.expect(response.transactionReference).to.exist;",
+                  "    pm.expect(response.id).to.exist;",
+                  "});",
+                  "",
+                  "if (response.id) {",
+                  "    pm.environment.set(\"paymentId\", String(response.id));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rideId\": \"{{rideId}}\",\n  \"amount\": {{amount}},\n  \"paymentMethod\": \"CARD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/payments",
+            "description": "Creates a payment and saves its generated ID in paymentId."
+          },
+          "response": []
+        },
+        {
+          "name": "04 - Get Payment",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Correct payment is returned\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(String(response.id)).to.eql(String(pm.environment.get(\"paymentId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/payments/{{paymentId}}"
+          },
+          "response": []
+        },
+        {
+          "name": "05 - Generate Receipt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "const response = pm.response.json();",
+                  "",
+                  "pm.test(\"Receipt is generated for the payment\", function () {",
+                  "    pm.expect(String(response.paymentId)).to.eql(String(pm.environment.get(\"paymentId\")));",
+                  "    pm.expect(response.id).to.exist;",
+                  "});",
+                  "",
+                  "if (response.id) {",
+                  "    pm.environment.set(\"receiptId\", String(response.id));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/receipts/{{paymentId}}",
+            "description": "Generates a receipt and saves its ID in receiptId."
+          },
+          "response": []
+        },
+        {
+          "name": "06 - Get Receipt",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Correct receipt is returned\", function () {",
+                  "    const response = pm.response.json();",
+                  "    pm.expect(String(response.id)).to.eql(String(pm.environment.get(\"receiptId\")));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/receipts/{{receiptId}}"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Negative Scenarios",
+      "item": [
+        {
+          "name": "07 - Payment Negative Amount",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Negative amount returns 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rideId\": \"{{rideId}}\",\n  \"amount\": -1,\n  \"paymentMethod\": \"CARD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/payments"
+          },
+          "response": []
+        },
+        {
+          "name": "08 - Payment Empty Method",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Empty payment method returns 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rideId\": \"{{rideId}}\",\n  \"amount\": {{amount}},\n  \"paymentMethod\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": "{{baseUrl}}/api/payments"
+          },
+          "response": []
+        },
+        {
+          "name": "09 - Invalid Fare Distance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Invalid distance returns 400 Bad Request\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{baseUrl}}/api/fares/estimate?rideId={{rideId}}&distanceKm=0"
+          },
+          "response": []
+        },
+        {
+          "name": "10 - Payment Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Missing payment returns 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/payments/999999"
+          },
+          "response": []
+        },
+        {
+          "name": "11 - Receipt Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Missing receipt returns 404 Not Found\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/receipts/999999"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

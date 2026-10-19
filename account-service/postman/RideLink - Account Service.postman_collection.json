@@ -1,0 +1,425 @@
+{
+  "info": {
+    "_postman_id": "dc5e8118-bfbf-4b09-a0a8-e84cadcd14f8",
+    "name": "RideLink - Account Service",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58686198",
+    "_collection_link": "https://go.postman.co/collection/58686198-dc5e8118-bfbf-4b09-a0a8-e84cadcd14f8?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Register Passenger",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Postman Test Passenger\",\r\n  \"email\": \"postman.passenger@example.com\",\r\n  \"password\": \"TestPassword123\",\r\n  \"role\": \"PASSENGER\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "if (pm.response.code === 200) {\r\n    const response = pm.response.json();\r\n    pm.environment.set(\"token\", response.token);\r\n    pm.environment.set(\"accountId\", String(response.id));\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Accounts - ADMIN",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Own Account",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts",
+            "{{accountId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Own Account",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Updated Postman Passenger\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts",
+            "{{accountId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Account - ADMIN",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts",
+            "{{accountId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register Driver",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Postman Test Driver\",\r\n  \"email\": \"postman.driver@example.com\",\r\n  \"password\": \"TestPassword123\",\r\n  \"role\": \"DRIVER\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Account Status - ADMIN",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{adminToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"status\": \"INACTIVE\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}/status",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts",
+            "{{accountId}}",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Missing Name - 400",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"missing.name@example.com\",\r\n  \"password\": \"TestPassword123\",\r\n  \"role\": \"PASSENGER\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid Login - 401",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"email\": \"postman.passenger@example.com\",\r\n  \"password\": \"WrongPassword123\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Missing Token - 401",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts/{{accountId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts",
+            "{{accountId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Passenger Admin Endpoint - 403",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Duplicate Email - 409",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Duplicate Passenger\",\r\n  \"email\": \"postman.passenger@example.com\",\r\n  \"password\": \"TestPassword123\",\r\n  \"role\": \"PASSENGER\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Invalid Admin Registration - 400",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Invalid Public Admin\",\r\n  \"email\": \"public.admin@example.com\",\r\n  \"password\": \"TestPassword123\",\r\n  \"role\": \"ADMIN\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/accounts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "accounts"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

@@ -1,0 +1,725 @@
+{
+  "info": {
+    "_postman_id": "b997f1b3-9226-4506-986e-cdb1b506d696",
+    "name": "RideLink - Driver and Vehicle Service API",
+    "description": "Postman collection for the RideLink Driver & Vehicle Service. Select the RideLink Local Environment before running requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45051303",
+    "_collection_link": "https://go.postman.co/collection/45051303-b997f1b3-9226-4506-986e-cdb1b506d696?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Driver APIs",
+      "item": [
+        {
+          "name": "Register Driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});\n\nif (pm.response.code === 201) {\n    const response = pm.response.json();\n    if (response.id) {\n        pm.environment.set(\"driverId\", response.id);\n    }\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": 2410402001,\n  \"licenseNumber\": \"RL-IT24104020-01\",\n  \"licenseExpiryDate\": \"2029-12-31\",\n  \"yearsOfExperience\": 6,\n  \"serviceArea\": \"Colombo\",\n  \"currentLatitude\": 6.9147,\n  \"currentLongitude\": 79.9729\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative - Duplicate Driver (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Duplicate driver returns 409 Conflict\", function () {\n    pm.response.to.have.status(409);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountId\": 2410402001,\n  \"licenseNumber\": \"RL-IT24104020-01\",\n  \"licenseExpiryDate\": \"2029-12-31\",\n  \"yearsOfExperience\": 7,\n  \"serviceArea\": \"Colombo\",\n  \"currentLatitude\": 6.9271,\n  \"currentLongitude\": 79.8612\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative - Invalid Driver Input (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Invalid driver input returns 400 Bad Request\", function () {\n    pm.response.to.have.status(400);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"accountId\": 2410402099,\r\n  \"licenseNumber\": \"RL-INVALID-400-01\",\r\n  \"licenseExpiryDate\": \"2029-12-31\",\r\n  \"yearsOfExperience\": -1,\r\n  \"serviceArea\": \"Colombo\",\r\n  \"currentLatitude\": 6.9271,\r\n  \"currentLongitude\": 79.8612\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Drivers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Driver by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/{{driverId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "{{driverId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative - Deactivated Driver Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deactivated driver returns 404 Not Found\", function () {\n    pm.response.to.have.status(404);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/{{driverId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "{{driverId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative - Driver Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Missing driver returns 404 Not Found\", function () {\n    pm.response.to.have.status(404);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "999999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find Available Drivers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/available?serviceArea={{serviceArea}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "available"
+              ],
+              "query": [
+                {
+                  "key": "serviceArea",
+                  "value": "{{serviceArea}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"licenseNumber\": \"RL-IT24104020-01\",\n  \"licenseExpiryDate\": \"2029-12-31\",\n  \"yearsOfExperience\": 7,\n  \"serviceArea\": \"Colombo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/{{driverId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "{{driverId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Availability",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availabilityStatus\": \"AVAILABLE\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/{{driverId}}/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "{{driverId}}",
+                "availability"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 6.9271,\n  \"longitude\": 79.8612\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/{{driverId}}/location",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "{{driverId}}",
+                "location"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drivers/{{driverId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "drivers",
+                "{{driverId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Vehicle APIs",
+      "item": [
+        {
+          "name": "Register Vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});\n\nif (pm.response.code === 201) {\n    const response = pm.response.json();\n    if (response.id) {\n        pm.environment.set(\"vehicleId\", response.id);\n    }\n}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"driverId\": {{driverId}},\n  \"registrationNumber\": \"RL-IT24020-V01\",\n  \"make\": \"Toyota\",\n  \"model\": \"Aqua\",\n  \"manufacturingYear\": 2020,\n  \"color\": \"White\",\n  \"vehicleType\": \"CAR\",\n  \"seatCapacity\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Vehicles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Vehicle by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicleId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Negative - Deactivated Vehicle Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Deactivated vehicle returns 404 Not Found\", function () {\n    pm.response.to.have.status(404);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicleId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Vehicles by Driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/driver/{{driverId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "driver",
+                "{{driverId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"registrationNumber\": \"RL-IT24020-V01\",\n  \"make\": \"Toyota\",\n  \"model\": \"Aqua S\",\n  \"manufacturingYear\": 2020,\n  \"color\": \"Blue\",\n  \"vehicleType\": \"CAR\",\n  \"seatCapacity\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicleId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vehicles",
+                "{{vehicleId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

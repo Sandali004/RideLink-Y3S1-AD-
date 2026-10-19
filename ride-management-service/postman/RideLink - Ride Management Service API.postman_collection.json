@@ -1,0 +1,851 @@
+{
+
+  "info": {
+
+    "_postman_id": "6df164bb-bca0-47ad-a806-22d13a3035af",
+
+    "name": "RideLink - Ride Management Service API",
+
+    "description": "Positive and negative API tests for the RideLink Ride Management Service.",
+
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+
+  },
+
+  "item": [
+
+    {
+
+      "name": "Complete Ride Workflow",
+
+      "item": [
+
+        {
+
+          "name": "Create Ride",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 201 Created\", function () {",
+
+                  "    pm.response.to.have.status(201);",
+
+                  "});",
+
+                  "",
+
+                  "const response = pm.response.json();",
+
+                  "",
+
+                  "pm.test(\"Ride starts with REQUESTED status\", function () {",
+
+                  "    pm.expect(response.status).to.eql(\"REQUESTED\");",
+
+                  "    pm.expect(response.id).to.exist;",
+
+                  "});",
+
+                  "",
+
+                  "if (response.id) {",
+
+                  "    pm.environment.set(\"rideId\", response.id);",
+
+                  "}"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "POST",
+
+            "header": [
+
+              {
+
+                "key": "Content-Type",
+
+                "value": "application/json"
+
+              }
+
+            ],
+
+            "body": {
+
+              "mode": "raw",
+
+              "raw": "{\n  \"passengerId\": \"{{passengerId}}\",\n  \"pickup\": \"Malabe\",\n  \"destination\": \"Colombo\"\n}"
+
+            },
+
+            "url": "{{baseUrl}}/api/rides",
+
+            "description": "Creates a new ride and saves its ID in the rideId environment variable."
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Get All Rides",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 200 OK\", function () {",
+
+                  "    pm.response.to.have.status(200);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Response is an array\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response).to.be.an(\"array\");",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "GET",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Get Ride by ID",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 200 OK\", function () {",
+
+                  "    pm.response.to.have.status(200);",
+
+                  "});",
+
+                  "",
+
+                  "const response = pm.response.json();",
+
+                  "",
+
+                  "pm.test(\"Correct ride is returned\", function () {",
+
+                  "    pm.expect(response.id).to.eql(pm.environment.get(\"rideId\"));",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "GET",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{rideId}}"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Assign Driver",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 200 OK\", function () {",
+
+                  "    pm.response.to.have.status(200);",
+
+                  "});",
+
+                  "",
+
+                  "const response = pm.response.json();",
+
+                  "",
+
+                  "pm.test(\"Ride status changes to ASSIGNED\", function () {",
+
+                  "    pm.expect(response.status).to.eql(\"ASSIGNED\");",
+
+                  "    pm.expect(String(response.driverId)).to.eql(String(pm.environment.get(\"driverId\")));",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "PUT",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{rideId}}/assign-driver/{{driverId}}"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Accept Ride",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 200 OK\", function () {",
+
+                  "    pm.response.to.have.status(200);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Ride status changes to ACCEPTED\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(\"ACCEPTED\");",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "PUT",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{rideId}}/accept"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Start Ride",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 200 OK\", function () {",
+
+                  "    pm.response.to.have.status(200);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Ride status changes to IN_PROGRESS\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(\"IN_PROGRESS\");",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "PUT",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{rideId}}/start"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Complete Ride",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 200 OK\", function () {",
+
+                  "    pm.response.to.have.status(200);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Ride status changes to COMPLETED\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(\"COMPLETED\");",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Completed ride includes distance and final fare\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(Number(response.distanceKm)).to.eql(Number(pm.environment.get(\"distanceKm\")));",
+
+                  "    pm.expect(response.finalFare).to.be.above(0);",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "PUT",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{rideId}}/complete?distanceKm={{distanceKm}}"
+
+          },
+
+          "response": []
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "name": "Cancellation Workflow",
+
+      "item": [
+
+        {
+
+          "name": "Create Ride for Cancellation",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 201 Created\", function () {",
+
+                  "    pm.response.to.have.status(201);",
+
+                  "});",
+
+                  "",
+
+                  "const response = pm.response.json();",
+
+                  "",
+
+                  "pm.test(\"Cancellation test ride starts as REQUESTED\", function () {",
+
+                  "    pm.expect(response.status).to.eql(\"REQUESTED\");",
+
+                  "    pm.expect(response.id).to.exist;",
+
+                  "});",
+
+                  "",
+
+                  "if (response.id) {",
+
+                  "    pm.environment.set(\"cancelRideId\", response.id);",
+
+                  "}"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "POST",
+
+            "header": [
+
+              {
+
+                "key": "Content-Type",
+
+                "value": "application/json"
+
+              }
+
+            ],
+
+            "body": {
+
+              "mode": "raw",
+
+              "raw": "{\n  \"passengerId\": \"{{passengerId}}\",\n  \"pickup\": \"Kaduwela\",\n  \"destination\": \"Malabe\"\n}"
+
+            },
+
+            "url": "{{baseUrl}}/api/rides"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Cancel Ride",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Status code is 200 OK\", function () {",
+
+                  "    pm.response.to.have.status(200);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Ride status changes to CANCELLED\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(\"CANCELLED\");",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "PUT",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{cancelRideId}}/cancel"
+
+          },
+
+          "response": []
+
+        }
+
+      ]
+
+    },
+
+    {
+
+      "name": "Negative Tests",
+
+      "item": [
+
+        {
+
+          "name": "Negative - Invalid Ride Input (400)",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Invalid input returns 400 Bad Request\", function () {",
+
+                  "    pm.response.to.have.status(400);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Error response contains status 400\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(400);",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "POST",
+
+            "header": [
+
+              {
+
+                "key": "Content-Type",
+
+                "value": "application/json"
+
+              }
+
+            ],
+
+            "body": {
+
+              "mode": "raw",
+
+              "raw": "{\n  \"passengerId\": \"\",\n  \"pickup\": \"\",\n  \"destination\": \"\"\n}"
+
+            },
+
+            "url": "{{baseUrl}}/api/rides"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Negative - Ride Not Found (404)",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Missing ride returns 404 Not Found\", function () {",
+
+                  "    pm.response.to.have.status(404);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Error response contains status 404\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(404);",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "GET",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{invalidRideId}}"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Negative - Accept Cancelled Ride (400)",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Invalid transition returns 400 Bad Request\", function () {",
+
+                  "    pm.response.to.have.status(400);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Error response describes invalid transition\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(400);",
+
+                  "    pm.expect(response.message).to.exist;",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "PUT",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{cancelRideId}}/accept"
+
+          },
+
+          "response": []
+
+        },
+
+        {
+
+          "name": "Negative - Complete Already Completed Ride (400)",
+
+          "event": [
+
+            {
+
+              "listen": "test",
+
+              "script": {
+
+                "type": "text/javascript",
+
+                "exec": [
+
+                  "pm.test(\"Repeated completion returns 400 Bad Request\", function () {",
+
+                  "    pm.response.to.have.status(400);",
+
+                  "});",
+
+                  "",
+
+                  "pm.test(\"Error response contains status 400\", function () {",
+
+                  "    const response = pm.response.json();",
+
+                  "    pm.expect(response.status).to.eql(400);",
+
+                  "});"
+
+                ]
+
+              }
+
+            }
+
+          ],
+
+          "request": {
+
+            "method": "PUT",
+
+            "header": [],
+
+            "url": "{{baseUrl}}/api/rides/{{rideId}}/complete?distanceKm={{distanceKm}}"
+
+          },
+
+          "response": []
+
+        }
+
+      ]
+
+    }
+
+  ]
+
+}
